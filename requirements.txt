@@ -4,3 +4,4 @@ rembg
 pillow
 onnxruntime
 python-multipart
+gunicorn
