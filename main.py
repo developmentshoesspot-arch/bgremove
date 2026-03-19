@@ -1,14 +1,18 @@
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import StreamingResponse
-from rembg import remove, new_session
+from rembg import remove
 import io
 
 app = FastAPI()
 
-session = new_session()
-
 @app.post("/remove-bg/")
 async def remove_bg(file: UploadFile = File(...)):
     input_image = await file.read()
-    output = remove(input_image, session=session)
+
+    # limit size (important)
+    if len(input_image) > 2 * 1024 * 1024:
+        return {"error": "Image too large (max 2MB)"}
+
+    output = remove(input_image)
+
     return StreamingResponse(io.BytesIO(output), media_type="image/png")
